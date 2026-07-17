@@ -3,7 +3,7 @@
 const firebaseConfig={apiKey:"AIzaSyDvWh3PF3DlSMCBDxcj1IU5QmlTRxQ-B08",authDomain:"allen-c2a7b.firebaseapp.com",projectId:"allen-c2a7b",storageBucket:"allen-c2a7b.firebasestorage.app",messagingSenderId:"457456642027",appId:"1:457456642027:web:0c08e6f19aff38cffa9bae",measurementId:"G-LG3H4L1W82"};
 firebase.initializeApp(firebaseConfig);
 const auth=firebase.auth(), db=firebase.firestore(), provider=new firebase.auth.GoogleAuthProvider();
-const STORAGE_KEY="expense-calculator-v2", defaultState={"categories": ["生活用品", "汽車", "保險", "飲食", "電話網路", "醫療保健", "居家", "美容美髮", "其他", "車貸", "房租", "固定餐費", "訂閱費", "股票"], "items": [{"id": "bcc5813d-0997-40dc-bb1a-f7d2c9b54260", "name": "生活用品", "amount": 6000, "frequency": "monthly", "category": "生活用品", "note": "日常用品"}, {"id": "c3f29bf6-61c3-40e1-9b4e-47b909f4f5cb", "name": "2026丙式保險－16,238", "amount": 16238, "frequency": "annual", "category": "汽車", "note": ""}, {"id": "33de5c8f-0c10-4694-870a-1117444dd41c", "name": "牌照稅－11,230", "amount": 11230, "frequency": "annual", "category": "汽車", "note": "每年4月繳費"}, {"id": "5e6971e9-d607-4dfe-bbf1-b4169f85d081", "name": "2026南山保險－18,795", "amount": 18795, "frequency": "annual", "category": "保險", "note": "每年3月繳費"}, {"id": "d652c7a4-1ecf-43c2-9971-44357b20860e", "name": "個人吃飯錢", "amount": 5000, "frequency": "monthly", "category": "飲食", "note": ""}, {"id": "65c20f5f-09a6-4233-8385-edf0ac692555", "name": "油錢、交通費", "amount": 5500, "frequency": "monthly", "category": "汽車", "note": ""}, {"id": "f4dda890-b36f-44db-8658-891a356c7335", "name": "iCloud 雲端會員", "amount": 30, "frequency": "monthly", "category": "訂閱費", "note": ""}, {"id": "dcfd4fc1-ab97-48b9-b982-5c76edfa0bf7", "name": "GPT 會員", "amount": 690, "frequency": "monthly", "category": "訂閱費", "note": ""}, {"id": "d251030a-c4f6-40e0-b831-f1f251c7c06f", "name": "保健食品", "amount": 1500, "frequency": "monthly", "category": "醫療保健", "note": ""}, {"id": "f9fe33c0-571d-450c-8e00-273725550c04", "name": "Cmary車貸", "amount": 10056, "frequency": "monthly", "category": "車貸", "note": ""}, {"id": "b60dc87b-1873-4ac9-b775-a47acf579de0", "name": "固定房租", "amount": 10000, "frequency": "monthly", "category": "居家", "note": "房租、水電、管理費"}, {"id": "777a750f-3a9d-4730-9019-0703b2e63019", "name": "YouTube 會員", "amount": 200, "frequency": "monthly", "category": "訂閱費", "note": ""}, {"id": "9d713e18-4a36-436e-8e29-79f090d56dbb", "name": "Google 訂閱", "amount": 200, "frequency": "monthly", "category": "訂閱費", "note": ""}, {"id": "62d5469a-5ec8-49c7-95b5-e8443994810f", "name": "剪頭髮", "amount": 500, "frequency": "monthly", "category": "美容美髮", "note": ""}, {"id": "3abdaa89-46ec-4058-b341-d0b87f034856", "name": "固定餐費", "amount": 10000, "frequency": "monthly", "category": "居家", "note": ""}, {"id": "c96a7be1-2b9f-436e-93b6-db5a6b04b9e0", "name": "燃料稅 - 6,180", "amount": 6180, "frequency": "annual", "category": "汽車", "note": "每年7月繳費"}, {"id": "3f51cb13-37f5-4133-91da-8f856b066c97", "name": "工廠監視器", "amount": 290, "frequency": "monthly", "category": "訂閱費", "note": ""}, {"id": "36d3d694-e50d-4e37-9b46-0d2aad939d80", "name": "0050股票", "amount": 5000, "frequency": "monthly", "category": "股票", "note": ""}]};
+const STORAGE_KEY="expense-calculator-v2", defaultState={"categories":["生活用品","汽車","保險","飲食","電話網路","醫療保健","居家","美容美髮","其他"],"items":[]};
 const colors=["#4b9cff","#44c78a","#ffb454","#b783ff","#ff6f91","#43c6db","#ffd166","#95d36e","#ff8a65","#7b8cff","#e879f9","#9ca3af"];
 let state=loadLocal(), editingId=null, currentUser=null, unsubscribeCloud=null, cloudWriteTimer=null, receivingCloud=false;
 const $=id=>document.getElementById(id);
@@ -38,9 +38,26 @@ els.form.addEventListener("submit",e=>{e.preventDefault();const name=els.name.va
 els.cancel.addEventListener("click",resetForm);
 els.rows.addEventListener("click",e=>{const edit=e.target.closest("[data-edit]"),del=e.target.closest("[data-delete]");if(edit){const i=state.items.find(x=>x.id===edit.dataset.edit);if(!i)return;editingId=i.id;els.name.value=i.name;els.amount.value=i.amount;els.frequency.value=i.frequency;els.category.value=i.category;els.note.value=i.note||"";els.formTitle.textContent="編輯支出";els.submit.textContent="儲存修改";els.cancel.classList.remove("hidden");window.scrollTo({top:0,behavior:"smooth"})}if(del){const i=state.items.find(x=>x.id===del.dataset.delete);if(i&&confirm(`確定刪除「${i.name}」？`)){state.items=state.items.filter(x=>x.id!==i.id);saveState();renderAll();toast("支出已刪除")}}});
 $("addCategoryBtn").addEventListener("click",()=>{const v=prompt("請輸入新分類名稱：");if(v===null)return;const n=v.trim();if(!n)return;if(state.categories.includes(n)){els.category.value=n;return toast("此分類已存在")}state.categories.push(n);saveState();renderCategories();els.category.value=n;toast("分類已新增")});
+$("deleteCategoryBtn").addEventListener("click",()=>{
+  const category=els.category.value;
+  if(!category)return toast("請先選擇要刪除的分類");
+  if(state.categories.length<=1)return toast("至少必須保留一個分類");
+  const affected=state.items.filter(i=>i.category===category);
+  const replacement=state.categories.includes("其他")&&category!=="其他"?"其他":state.categories.find(c=>c!==category);
+  const message=affected.length
+    ? `「${category}」目前有 ${affected.length} 筆支出。確定刪除分類，並將這些支出移到「${replacement}」嗎？`
+    : `確定刪除分類「${category}」嗎？`;
+  if(!confirm(message))return;
+  if(affected.length)state.items.forEach(i=>{if(i.category===category)i.category=replacement});
+  state.categories=state.categories.filter(c=>c!==category);
+  saveState();
+  renderAll();
+  els.category.value=replacement;
+  toast(affected.length?`分類已刪除，${affected.length} 筆支出已移到「${replacement}」`:`分類「${category}」已刪除`);
+});
 [els.search,els.categoryFilter,els.sort].forEach(el=>el.addEventListener(el.tagName==="INPUT"?"input":"change",renderTable));els.chartBasis.addEventListener("change",drawChart);window.addEventListener("resize",()=>requestAnimationFrame(drawChart));
 $("exportBtn").addEventListener("click",()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=`支出備份_${new Date().toISOString().slice(0,10)}.json`;a.click();URL.revokeObjectURL(url)});
 $("importBtn").addEventListener("click",()=>els.importFile.click());els.importFile.addEventListener("change",async()=>{const f=els.importFile.files[0];if(!f)return;try{const d=JSON.parse(await f.text());if(!validState(d))throw Error();state=d;saveState();resetForm();renderAll();toast("備份已匯入並同步")}catch(e){alert("備份檔格式不正確。")}finally{els.importFile.value=""}});
-$("resetBtn").addEventListener("click",()=>{if(confirm("確定重設？目前所有資料會被範例資料取代。")){state=clone(defaultState);saveState();resetForm();renderAll();toast("已重設")}});
+$("resetBtn").addEventListener("click",()=>{if(confirm("確定重設？這會清除所有支出，並恢復預設分類。")){state=clone(defaultState);saveState();resetForm();renderAll();toast("已重設")}});
 renderAll();
 })();

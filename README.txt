@@ -1,16 +1,14 @@
-雲端版更新檔
+分類刪除功能更新
 
-請把以下 3 個檔案上傳到 GitHub Repository 的根目錄：
-- index.html
-- styles.css
-- app.js
+請將以下兩個檔案上傳到 GitHub Repository 根目錄並取代原檔：
+1. index.html
+2. app.js
 
-上傳時，index.html 請選擇取代原本檔案。
+不需要更換 styles.css。
 
-之後到 Firebase：
-Authentication → 設定 → Authorized domains
-新增：
-leeweiwei0727.github.io
+刪除規則：
+- 尚未使用的分類：確認後直接刪除。
+- 已被支出使用的分類：支出會在確認後移至「其他」；若刪除的是「其他」，則移至另一個現有分類。
+- 至少保留一個分類。
 
-網站網址：
-https://leeweiwei0727.github.io/expense-calculator/
+另外已移除公開 app.js 內硬編碼的個人支出資料；你的既有雲端資料不會被刪除。

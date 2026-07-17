@@ -30,7 +30,7 @@
 <div class="field full"><label for="name">支出名稱</label><input id="name" maxlength="80" required placeholder="例如：車貸、房租、保險"></div>
 <div class="field"><label for="amount">金額</label><input id="amount" type="number" min="0" step="1" required placeholder="0"></div>
 <div class="field"><label for="frequency">付款週期</label><select id="frequency"><option value="monthly">每月</option><option value="annual">每年</option><option value="quarterly">每季</option><option value="weekly">每週</option></select></div>
-<div class="field full"><label for="category">分類</label><div class="inline"><select id="category" required></select><button class="btn" type="button" id="addCategoryBtn">＋分類</button></div></div>
+<div class="field full"><label for="category">分類</label><div class="inline"><select id="category" required></select><button class="btn" type="button" id="addCategoryBtn">＋分類</button><button class="btn danger" type="button" id="deleteCategoryBtn">刪除分類</button></div></div>
 <div class="field full"><label for="note">備註（選填）</label><input id="note" maxlength="120" placeholder="例如：每年 6 月扣款"></div>
 </div><div class="form-actions"><button class="btn primary" type="submit" id="submitBtn">新增支出</button><button class="btn hidden" type="button" id="cancelEditBtn">取消編輯</button></div>
 <div class="helper">登入 Google 後，資料會自動同步到手機與電腦；未登入時仍可使用本機模式。</div></form></section>
